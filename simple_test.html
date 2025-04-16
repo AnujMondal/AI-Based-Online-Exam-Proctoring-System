@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Webcam Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .webcam-container {
+        margin: 20px 0;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+      #webcam {
+        width: 100%;
+        border: 1px solid #ddd;
+      }
+      .controls {
+        margin: 20px 0;
+      }
+      button {
+        padding: 10px 15px;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+      #status {
+        margin: 20px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        background-color: #f5f5f5;
+        height: 200px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Simple Webcam Test</h1>
+    <p>
+      This is a basic test page to check if your webcam is working properly.
+    </p>
+
+    <div class="webcam-container">
+      <video id="webcam" autoplay playsinline></video>
+    </div>
+
+    <div class="controls">
+      <button id="startBtn">Start Webcam</button>
+      <button id="stopBtn">Stop Webcam</button>
+      <button id="captureBtn">Capture Still Image</button>
+    </div>
+
+    <div>
+      <h3>Captured Image:</h3>
+      <canvas id="canvas" style="display: none"></canvas>
+      <img id="snapshot" style="max-width: 100%" />
+    </div>
+
+    <div>
+      <h3>Debug Log:</h3>
+      <div id="status"></div>
+    </div>
+
+    <script>
+      // DOM elements
+      const webcamElement = document.getElementById("webcam");
+      const canvasElement = document.getElementById("canvas");
+      const snapElement = document.getElementById("snapshot");
+      const statusElement = document.getElementById("status");
+      const startButton = document.getElementById("startBtn");
+      const stopButton = document.getElementById("stopBtn");
+      const captureButton = document.getElementById("captureBtn");
+
+      // Variables
+      let stream = null;
+
+      // Logging function
+      function log(message) {
+        console.log(message);
+        const logEntry = document.createElement("div");
+        logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+        statusElement.appendChild(logEntry);
+        statusElement.scrollTop = statusElement.scrollHeight;
+      }
+
+      // Start webcam
+      async function startWebcam() {
+        try {
+          log("Requesting camera access...");
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false,
+          });
+          log("Camera access granted!");
+
+          webcamElement.srcObject = stream;
+          webcamElement.onloadedmetadata = () => {
+            log(
+              `Video dimensions: ${webcamElement.videoWidth}x${webcamElement.videoHeight}`
+            );
+            canvasElement.width = webcamElement.videoWidth;
+            canvasElement.height = webcamElement.videoHeight;
+          };
+
+          startButton.disabled = true;
+          stopButton.disabled = false;
+          captureButton.disabled = false;
+        } catch (error) {
+          log(`Error accessing camera: ${error.message}`);
+        }
+      }
+
+      // Stop webcam
+      function stopWebcam() {
+        if (stream) {
+          log("Stopping webcam...");
+          stream.getTracks().forEach((track) => {
+            track.stop();
+          });
+          webcamElement.srcObject = null;
+          stream = null;
+
+          startButton.disabled = false;
+          stopButton.disabled = true;
+          captureButton.disabled = true;
+          log("Webcam stopped");
+        }
+      }
+
+      // Capture still image
+      function captureImage() {
+        if (!stream) {
+          log("No active webcam stream");
+          return;
+        }
+
+        try {
+          log("Capturing still image...");
+          const context = canvasElement.getContext("2d");
+          context.drawImage(
+            webcamElement,
+            0,
+            0,
+            canvasElement.width,
+            canvasElement.height
+          );
+
+          // Display the captured image
+          snapElement.src = canvasElement.toDataURL("image/png");
+          log("Image captured successfully");
+        } catch (error) {
+          log(`Error capturing image: ${error.message}`);
+        }
+      }
+
+      // Add event listeners
+      startButton.addEventListener("click", startWebcam);
+      stopButton.addEventListener("click", stopWebcam);
+      captureButton.addEventListener("click", captureImage);
+
+      // Initialize
+      window.addEventListener("DOMContentLoaded", () => {
+        log("Page loaded");
+        stopButton.disabled = true;
+        captureButton.disabled = true;
+      });
+    </script>
+  </body>
+</html>

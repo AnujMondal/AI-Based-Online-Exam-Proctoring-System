@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proctor Dashboard - AI Proctoring System</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .dashboard-container {
+        padding: 20px;
+      }
+      .navbar-brand {
+        font-weight: 700;
+      }
+      .sidebar {
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        padding: 20px 0;
+        width: 250px;
+        background-color: #212529;
+        color: white;
+      }
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+      }
+      .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 10px 20px;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        color: white;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      .dashboard-card {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+      }
+      .dashboard-card-header {
+        background-color: #0d6efd;
+        color: white;
+        padding: 15px 20px;
+        font-weight: 600;
+      }
+      .status-badge {
+        font-size: 0.85rem;
+        padding: 5px 10px;
+      }
+      .table th {
+        font-weight: 600;
+      }
+      .badge {
+        font-weight: 500;
+      }
+      .student-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: transform 0.2s;
+      }
+      .student-card:hover {
+        transform: translateY(-5px);
+      }
+      .student-card-header {
+        background-color: #343a40;
+        color: white;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .webcam-container {
+        width: 100%;
+        position: relative;
+      }
+      .webcam-container img {
+        width: 100%;
+        height: auto;
+        border-bottom: 1px solid #dee2e6;
+      }
+      .violation-indicator {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(220, 53, 69, 0.9);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+      .student-card-body {
+        padding: 15px;
+      }
+      .student-info {
+        margin-bottom: 10px;
+      }
+      .student-actions {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+      }
+      .status-summary {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+      .summary-card {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        flex: 1;
+        margin: 0 10px;
+      }
+      .summary-card h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 10px 0;
+      }
+      .summary-card p {
+        color: #6c757d;
+        margin-bottom: 0;
+      }
+      .summary-active {
+        border-bottom: 4px solid #198754;
+      }
+      .summary-warnings {
+        border-bottom: 4px solid #fd7e14;
+      }
+      .summary-violations {
+        border-bottom: 4px solid #dc3545;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">AI Proctoring Dashboard</a>
+        <div class="ms-auto d-flex align-items-center">
+          <span class="text-light me-3">Proctor: Admin</span>
+          <a href="#" class="btn btn-outline-light btn-sm">Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="dashboard-container">
+      <div class="sidebar">
+        <div class="px-3 mb-3">
+          <h6 class="text-uppercase text-muted">Main Menu</h6>
+        </div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a href="#" class="nav-link active">
+              <i class="bi bi-display me-2"></i> Live Monitoring
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="bi bi-exclamation-triangle me-2"></i> Violations
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="bi bi-file-text me-2"></i> Reports
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="bi bi-gear me-2"></i> Settings
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="main-content">
+        <h1 class="mb-4">Live Monitoring</h1>
+
+        <div class="status-summary">
+          <div class="summary-card summary-active">
+            <p>Active Sessions</p>
+            <h2 id="activeSessionsCount">0</h2>
+          </div>
+          <div class="summary-card summary-warnings">
+            <p>Total Warnings</p>
+            <h2 id="totalWarningsCount">0</h2>
+          </div>
+          <div class="summary-card summary-violations">
+            <p>Severe Violations</p>
+            <h2 id="severeViolationsCount">0</h2>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <div
+            class="dashboard-card-header d-flex justify-content-between align-items-center"
+          >
+            <span>Active Test Sessions</span>
+            <div>
+              <button class="btn btn-sm btn-light" id="refreshBtn">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row" id="studentsContainer">
+              <!-- Student cards will be inserted here dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template for student card -->
+    <template id="studentCardTemplate">
+      <div class="col-md-6 col-lg-4">
+        <div class="student-card">
+          <div class="student-card-header">
+            <span class="student-name">Student Name</span>
+            <span class="badge bg-success status-badge">Active</span>
+          </div>
+          <div class="webcam-container">
+            <img src="" alt="Student webcam feed" class="student-feed" />
+            <div class="violation-indicator d-none">🚨 Violation</div>
+          </div>
+          <div class="student-card-body">
+            <div class="student-info">
+              <p class="mb-1">
+                <strong>ID:</strong> <span class="student-id">ST12345</span>
+              </p>
+              <p class="mb-1">
+                <strong>Started:</strong>
+                <span class="start-time">10:30 AM</span>
+              </p>
+              <p class="mb-1">
+                <strong>Warnings:</strong>
+                <span class="warning-count">0</span>
+                <small class="text-danger max-warnings">/ 5</small>
+              </p>
+            </div>
+            <div class="student-actions">
+              <button class="btn btn-sm btn-primary view-btn">
+                <i class="bi bi-camera-video"></i> View
+              </button>
+              <button class="btn btn-sm btn-warning message-btn">
+                <i class="bi bi-chat"></i> Message
+              </button>
+              <button class="btn btn-sm btn-danger terminate-btn">
+                <i class="bi bi-x-circle"></i> Terminate
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        loadActiveSessions();
+
+        // Set up refresh button
+        document
+          .getElementById("refreshBtn")
+          .addEventListener("click", loadActiveSessions);
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadActiveSessions, 30000);
+      });
+
+      async function loadActiveSessions() {
+        try {
+          const response = await fetch("/api/active-sessions");
+          const data = await response.json();
+
+          if (data.success) {
+            displaySessions(data.sessions);
+            updateSummary(data.sessions);
+          } else {
+            console.error("Error loading sessions:", data.error);
+          }
+        } catch (error) {
+          console.error("Error fetching active sessions:", error);
+        }
+      }
+
+      function displaySessions(sessions) {
+        const container = document.getElementById("studentsContainer");
+        const template = document.getElementById("studentCardTemplate");
+
+        // Clear existing content
+        container.innerHTML = "";
+
+        if (sessions.length === 0) {
+          container.innerHTML =
+            '<div class="col-12 text-center py-5"><p>No active sessions at this time.</p></div>';
+          return;
+        }
+
+        // Create a card for each session
+        sessions.forEach((session) => {
+          const card = template.content.cloneNode(true);
+
+          // Fill in student data
+          card.querySelector(
+            ".student-name"
+          ).textContent = `Student ${session.user_id}`;
+          card.querySelector(".student-id").textContent = session.user_id;
+          card.querySelector(".start-time").textContent = session.start_time;
+          card.querySelector(".warning-count").textContent =
+            session.warning_count;
+
+          // Set status badge
+          const statusBadge = card.querySelector(".status-badge");
+          if (session.status === "Active") {
+            statusBadge.classList.add("bg-success");
+            statusBadge.textContent = "Active";
+          } else {
+            statusBadge.classList.remove("bg-success");
+            statusBadge.classList.add("bg-secondary");
+            statusBadge.textContent = "Ended";
+          }
+
+          // Show violation indicator if there are warnings
+          if (session.warning_count > 0) {
+            const violationIndicator = card.querySelector(
+              ".violation-indicator"
+            );
+            violationIndicator.classList.remove("d-none");
+            violationIndicator.textContent = `🚨 ${session.warning_count} Violations`;
+          }
+
+          // Set image (placeholder in a real app, this would be a live feed)
+          const feedImage = card.querySelector(".student-feed");
+          feedImage.src = `/static/uploads/baseline/${session.user_id}_photo.jpg`;
+
+          // Add event listeners for buttons
+          card.querySelector(".view-btn").addEventListener("click", () => {
+            viewStudentDetails(session.session_id);
+          });
+
+          card.querySelector(".message-btn").addEventListener("click", () => {
+            messageStudent(session.session_id);
+          });
+
+          card.querySelector(".terminate-btn").addEventListener("click", () => {
+            terminateSession(session.session_id);
+          });
+
+          container.appendChild(card);
+        });
+      }
+
+      function updateSummary(sessions) {
+        // Update summary counters
+        const activeSessions = sessions.filter(
+          (s) => s.status === "Active"
+        ).length;
+        const totalWarnings = sessions.reduce(
+          (sum, session) => sum + session.warning_count,
+          0
+        );
+        const severeViolations = sessions.filter(
+          (s) => s.warning_count >= 3
+        ).length;
+
+        document.getElementById("activeSessionsCount").textContent =
+          activeSessions;
+        document.getElementById("totalWarningsCount").textContent =
+          totalWarnings;
+        document.getElementById("severeViolationsCount").textContent =
+          severeViolations;
+      }
+
+      function viewStudentDetails(sessionId) {
+        alert(`Viewing details for session ${sessionId}`);
+        // In a real app, this would open a detailed view
+      }
+
+      function messageStudent(sessionId) {
+        alert(`Sending message to session ${sessionId}`);
+        // In a real app, this would open a messaging interface
+      }
+
+      async function terminateSession(sessionId) {
+        if (
+          confirm(`Are you sure you want to terminate session ${sessionId}?`)
+        ) {
+          try {
+            // In a real app, this would call an API endpoint
+            alert(`Session ${sessionId} terminated`);
+            loadActiveSessions(); // Refresh the list
+          } catch (error) {
+            console.error("Error terminating session:", error);
+          }
+        }
+      }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

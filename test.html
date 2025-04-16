@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Proctored Exam - Demo</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .header {
+        background-color: #007bff;
+        color: white;
+        padding: 15px 0;
+        text-align: center;
+      }
+      .main-container {
+        display: flex;
+        margin-top: 20px;
+      }
+      .exam-content {
+        flex: 3;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-right: 20px;
+      }
+      .monitoring-sidebar {
+        flex: 1;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        height: fit-content; /* Make sidebar height adjust to content */
+      }
+      .webcam-container {
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        padding: 5px;
+        background-color: #eee;
+        text-align: center;
+      }
+      #webcam {
+        width: 100%;
+        max-width: 320px;
+        border: 1px solid #ddd;
+      }
+      .status-panel {
+        margin-top: 15px;
+      }
+      .status-item {
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+      }
+      .status-label {
+        font-weight: bold;
+        color: #555;
+      }
+      .status-value {
+        font-weight: normal;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      .status-normal {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .status-warning {
+        background-color: #fff3cd;
+        color: #856404;
+      }
+      .status-alert {
+        background-color: #f8d7da;
+        color: #721c24;
+        font-weight: bold;
+      }
+      .question-container {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+      }
+      .question-text {
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+      .footer {
+        background-color: #e9ecef;
+        padding: 15px;
+        text-align: center;
+        margin-top: 30px;
+        border-top: 1px solid #dee2e6;
+      }
+      .exam-timer {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #333;
+      }
+      #alertBanner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #dc3545;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        z-index: 1050; /* Ensure it's above other elements */
+        display: none; /* Hidden by default */
+        font-weight: bold;
+      }
+      #debugInfo {
+        max-height: 100px;
+        overflow-y: auto;
+        font-size: 10px;
+        background: #f0f0f0;
+        padding: 5px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        white-space: pre-wrap; /* Preserve line breaks */
+        word-wrap: break-word;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="alertBanner">
+      <span id="alertMessage"></span>
+    </div>
+
+    <div class="header">
+      <h1>AI Proctored Exam Demo</h1>
+    </div>
+
+    <div class="container-fluid main-container">
+      <!-- Exam Content Area -->
+      <div class="exam-content">
+        <h2>Sample Exam Questions</h2>
+        <p>Please answer the following questions.</p>
+
+        <!-- Question 1 -->
+        <div class="question-container">
+          <p class="question-text">1. What is the capital of France?</p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q1"
+              id="q1a"
+              value="a"
+            />
+            <label class="form-check-label" for="q1a"> London</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q1"
+              id="q1b"
+              value="b"
+            />
+            <label class="form-check-label" for="q1b"> Paris</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q1"
+              id="q1c"
+              value="c"
+            />
+            <label class="form-check-label" for="q1c"> Berlin</label>
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question-container">
+          <p class="question-text">2. Solve for x: 2x + 5 = 15</p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q2"
+              id="q2a"
+              value="a"
+            />
+            <label class="form-check-label" for="q2a"> x = 5</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q2"
+              id="q2b"
+              value="b"
+            />
+            <label class="form-check-label" for="q2b"> x = 10</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q2"
+              id="q2c"
+              value="c"
+            />
+            <label class="form-check-label" for="q2c"> x = 7.5</label>
+          </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question-container">
+          <p class="question-text">
+            3. What is the largest planet in our solar system?
+          </p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q3"
+              id="q3a"
+              value="a"
+            />
+            <label class="form-check-label" for="q3a"> Earth</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q3"
+              id="q3b"
+              value="b"
+            />
+            <label class="form-check-label" for="q3b"> Mars</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q3"
+              id="q3c"
+              value="c"
+            />
+            <label class="form-check-label" for="q3c"> Jupiter</label>
+          </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question-container">
+          <p class="question-text">4. Who wrote "Hamlet"?</p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q4"
+              id="q4a"
+              value="a"
+            />
+            <label class="form-check-label" for="q4a"> Charles Dickens</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q4"
+              id="q4b"
+              value="b"
+            />
+            <label class="form-check-label" for="q4b">
+              William Shakespeare</label
+            >
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q4"
+              id="q4c"
+              value="c"
+            />
+            <label class="form-check-label" for="q4c"> Jane Austen</label>
+          </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question-container">
+          <p class="question-text">5. What is H2O?</p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q5"
+              id="q5a"
+              value="a"
+            />
+            <label class="form-check-label" for="q5a"> Salt</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q5"
+              id="q5b"
+              value="b"
+            />
+            <label class="form-check-label" for="q5b"> Water</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q5"
+              id="q5c"
+              value="c"
+            />
+            <label class="form-check-label" for="q5c"> Sugar</label>
+          </div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="question-container">
+          <p class="question-text">6. What year did World War II end?</p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q6"
+              id="q6a"
+              value="a"
+            />
+            <label class="form-check-label" for="q6a"> 1945</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q6"
+              id="q6b"
+              value="b"
+            />
+            <label class="form-check-label" for="q6b"> 1918</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q6"
+              id="q6c"
+              value="c"
+            />
+            <label class="form-check-label" for="q6c"> 1960</label>
+          </div>
+        </div>
+
+        <!-- Question 7 -->
+        <div class="question-container">
+          <p class="question-text">7. What is the square root of 64?</p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q7"
+              id="q7a"
+              value="a"
+            />
+            <label class="form-check-label" for="q7a"> 6</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q7"
+              id="q7b"
+              value="b"
+            />
+            <label class="form-check-label" for="q7b"> 8</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q7"
+              id="q7c"
+              value="c"
+            />
+            <label class="form-check-label" for="q7c"> 10</label>
+          </div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="question-container">
+          <p class="question-text">8. What color is a ruby?</p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q8"
+              id="q8a"
+              value="a"
+            />
+            <label class="form-check-label" for="q8a"> Blue</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q8"
+              id="q8b"
+              value="b"
+            />
+            <label class="form-check-label" for="q8b"> Green</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q8"
+              id="q8c"
+              value="c"
+            />
+            <label class="form-check-label" for="q8c"> Red</label>
+          </div>
+        </div>
+
+        <!-- Question 9 -->
+        <div class="question-container">
+          <p class="question-text">9. How many continents are there?</p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q9"
+              id="q9a"
+              value="a"
+            />
+            <label class="form-check-label" for="q9a"> 5</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q9"
+              id="q9b"
+              value="b"
+            />
+            <label class="form-check-label" for="q9b"> 6</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q9"
+              id="q9c"
+              value="c"
+            />
+            <label class="form-check-label" for="q9c"> 7</label>
+          </div>
+        </div>
+
+        <!-- Question 10 -->
+        <div class="question-container">
+          <p class="question-text">
+            10. What is the primary gas found in the Earth's atmosphere?
+          </p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q10"
+              id="q10a"
+              value="a"
+            />
+            <label class="form-check-label" for="q10a"> Oxygen</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q10"
+              id="q10b"
+              value="b"
+            />
+            <label class="form-check-label" for="q10b"> Nitrogen</label>
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="q10"
+              id="q10c"
+              value="c"
+            />
+            <label class="form-check-label" for="q10c"> Carbon Dioxide</label>
+          </div>
+        </div>
+
+        <!-- Footer with Timer and Submit Buttons -->
+        <div class="footer">
+          <div
+            class="container d-flex justify-content-between align-items-center py-3"
+          >
+            <div class="exam-timer" id="examTimer" style="display: none">
+              Time Remaining: 00:00:00
+            </div>
+            <div class="controls">
+              <button id="submitBtn" class="btn btn-success btn-lg">
+                Submit Exam
+              </button>
+              <button
+                id="emergencySubmitBtn"
+                class="btn btn-danger btn-lg ms-2"
+              >
+                EMERGENCY SUBMIT
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Exam Content Area -->
+
+      <!-- Monitoring Sidebar -->
+      <div class="monitoring-sidebar">
+        <h4>Monitoring Status</h4>
+
+        <div class="webcam-container">
+          <div id="webcam-holder" class="position-relative">
+            <!-- Video element for webcam -->
+            <video
+              id="webcam"
+              class="w-100 border"
+              autoplay
+              playsinline
+              muted
+            ></video>
+            <div id="webcam-canvas-holder" class="d-none">
+              <canvas id="webcam-canvas" class="w-100 border"></canvas>
+            </div>
+            <div id="webcam-error" class="d-none position-absolute top-0 left-0 w-100 h-100 bg-light p-3">
+          <video id="webcam" autoplay playsinline muted></video>
+          <p><small>Your webcam feed</small></p>
+        </div>
+
+        <div class="status-panel">
+          <!-- Webcam Ready Status (Added) -->
+          <div class="status-item">
+            <span class="status-label">Webcam Status:</span>
+            <span id="webcam-ready-status" class="status-value status-warning"
+              >Initializing...</span
+            >
+          </div>
+          <!-- Other Statuses -->
+          <div class="status-item">
+            <span class="status-label">Face Detection:</span>
+            <span id="face-status" class="status-value status-pending">Waiting...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Identity Verification:</span>
+            <span id="identity-status" class="status-value status-pending">Waiting...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Head Position:</span>
+            <span id="head-status" class="status-value status-pending">Waiting...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Eye Gaze Direction:</span>
+            <span id="gaze-status" class="status-value status-pending">Waiting...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Audio Monitoring:</span>
+            <span id="audio-status" class="status-value status-pending">Waiting...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Voice Authentication:</span>
+            <span id="voice-auth-status" class="status-value status-pending">Waiting...</span>
+          </div>
+          <!-- Prohibited Items Status -->
+          <div class="status-item">
+            <span class="status-label">Prohibited Items:</span>
+            <span id="prohibited-items-status" class="status-value status-pending">Waiting...</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Warnings:</span>
+            <span id="warning-count" class="status-value status-normal">0</span>
+            <span>/</span>
+            <span id="max-warnings">5</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Overall Status:</span>
+            <span id="status-message" class="status-value status-normal"
+              >Monitoring...</span
+            >
+          </div>
+          
+          <!-- Simulation Controls (New) -->
+          <div class="status-item mt-3">
+            <div class="card p-2 bg-light">
+              <h6 class="text-center mb-2">Simulation Controls</h6>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Phone Simulation:</span>
+                <span id="phone-simulation-status" class="badge bg-secondary">Disabled</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Book Simulation:</span>
+                <span id="book-simulation-status" class="badge bg-secondary">Disabled</span>
+              </div>
+              <div class="text-center">
+                <button id="disable-simulations-btn" class="btn btn-sm btn-danger mt-1 mb-1">Disable All Simulations</button>
+              </div>
+              <div class="text-center small text-muted">Press 'p' for phone, 'b' for book</div>
+            </div>
+          </div>
+
+          <!-- Debug Info Container - Hidden -->
+          <div class="status-item mt-3" style="display: none;">
+            <span class="status-label">Debug Log:</span>
+            <div id="debug-log"></div>
+          </div>
+        </div>
+      </div>
+      <!-- End Monitoring Sidebar -->
+    </div>
+    <!-- End Main Container -->
+
+    <!-- Termination Modal -->
+    <div
+      class="modal fade"
+      id="terminationModal"
+      tabindex="-1"
+      aria-labelledby="terminationModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="terminationModalLabel">
+              Exam Terminated
+            </h5>
+          </div>
+          <div class="modal-body">
+            <p>Your exam has been terminated due to policy violations.</p>
+            <p id="termination-reason">Reason: Multiple violations detected</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="returnToLoginBtn">
+              Return to Login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // DOM elements
+      const webcamElement = document.getElementById("webcam");
+      const faceStatus = document.getElementById("face-status");
+      const identityStatus = document.getElementById("identity-status");
+      const headStatus = document.getElementById("head-status");
+      const audioStatus = document.getElementById("audio-status");
+      const voiceAuthStatus = document.getElementById("voice-auth-status");
+      const warningCount = document.getElementById("warning-count");
+      const maxWarnings = document.getElementById("max-warnings");
+      const statusMessage = document.getElementById("status-message");
+      const alertBanner = document.getElementById("alertBanner");
+      const alertMessage = document.getElementById("alertMessage");
+      const debugInfo = document.getElementById("debug-log");
+      const terminationModal = new bootstrap.Modal(
+        document.getElementById("terminationModal")
+      );
+      const terminationReason = document.getElementById("termination-reason");
+      const webcamReadyStatus = document.getElementById("webcam-ready-status"); // Added
+
+      // Variables
+      let stream = null;
+      let mediaRecorder = null;
+      let audioChunks = [];
+      let monitoringInterval = null;
+      let voiceVerificationInterval = null;
+      let lastMonitoringTime = Date.now();
+      let lastVoiceVerificationTime = Date.now();
+      let currentWarnings = 0;
+      const MAX_WARNINGS = 5; // Should match backend setting
+      const VOICE_VERIFICATION_INTERVAL = 15000; // 15 seconds between voice checks
+      let previousWarnings = 0;
+
+      // Logging function
+      function debugLog(...messages) {
+        const messageString = messages
+          .map((m) => (typeof m === "object" ? JSON.stringify(m) : m))
+          .join(" ");
+        console.log(messageString);
+        // Remove UI logging to prevent showing logs on page
+      }
+
+      // Initialize Webcam - Better error handling and UX
+      async function initWebcam() {
+        try {
+          debugLog("Requesting camera access...");
+
+          // Make webcam element more visible for debugging
+          webcamElement.style.border = "2px solid orange";
+          webcamElement.style.minHeight = "240px";
+          webcamReadyStatus.textContent = "Requesting Access...";
+
+          // Check if navigator.mediaDevices is available
+          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error(
+              "Your browser doesn't support mediaDevices API. Please try a different browser like Chrome."
+            );
+          }
+
+          // Request webcam with specific video constraints for better compatibility
+          const constraints = {
+            video: {
+              width: { ideal: 640 },
+              height: { ideal: 480 },
+              facingMode: "user",
+            },
+            audio: true, // Request audio as well for voice authentication
+          };
+
+          stream = await navigator.mediaDevices.getUserMedia(constraints);
+          debugLog("Camera and audio access granted! Setting up video stream...");
+
+          // Add click handler to play video if paused
+          webcamElement.addEventListener("click", () => {
+            if (webcamElement.paused) {
+              webcamElement
+                .play()
+                .catch((e) => debugLog("Play failed:", e.message));
+            }
+          });
+
+          // Set up the stream
+          webcamElement.srcObject = stream;
+          webcamElement.style.border = "2px solid green";
+
+          // Try to explicitly play the video (may be required on some browsers)
+          try {
+            await webcamElement.play();
+            debugLog("Video playback started");
+          } catch (playError) {
+            debugLog("Auto-play failed:", playError.message);
+            showAlert("Please click the webcam to start video");
+          }
+
+          // Wait for metadata to load
+          if (!webcamElement.videoWidth) {
+            webcamElement.onloadedmetadata = () => {
+              debugLog(
+                `Video dimensions: ${webcamElement.videoWidth}x${webcamElement.videoHeight}`
+              );
+              startMonitoring(); // Start monitoring once metadata is loaded
+            };
+          } else {
+            debugLog(
+              `Video already has dimensions: ${webcamElement.videoWidth}x${webcamElement.videoHeight}`
+            );
+            startMonitoring();
+          }
+        } catch (error) {
+          webcamElement.style.border = "2px solid red";
+          webcamReadyStatus.textContent = "Access Failed";
+          webcamReadyStatus.className = "status-value status-alert";
+
+          debugLog(`Error accessing camera: ${error.name} - ${error.message}`);
+          showAlert(
+            `Unable to access camera: ${error.message}. Please ensure camera permissions are granted and no other app is using your camera.`
+          );
+
+          // Show a message in the video area too
+          const ctx = document.createElement("canvas").getContext("2d");
+          ctx.canvas.width = 320;
+          ctx.canvas.height = 240;
+          ctx.fillStyle = "#f8d7da";
+          ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+          ctx.font = "14px Arial";
+          ctx.fillStyle = "black";
+          ctx.textAlign = "center";
+          ctx.fillText(
+            "Camera access failed",
+            ctx.canvas.width / 2,
+            ctx.canvas.height / 2 - 20
+          );
+          ctx.fillText(
+            error.message,
+            ctx.canvas.width / 2,
+            ctx.canvas.height / 2
+          );
+          ctx.fillText(
+            "Please check browser permissions",
+            ctx.canvas.width / 2,
+            ctx.canvas.height / 2 + 20
+          );
+
+          // Insert the canvas in place of the video
+          const container = webcamElement.parentElement;
+          container.insertBefore(ctx.canvas, webcamElement);
+          webcamElement.style.display = "none";
+        }
+      }
+
+      // Function to check if webcam is ready and display status
+      function checkWebcamReady() {
+        if (
+          webcamElement.readyState >= 3 &&
+          webcamElement.videoWidth &&
+          webcamElement.videoHeight
+        ) {
+          webcamReadyStatus.textContent = "Ready";
+          webcamReadyStatus.className = "status-value status-normal";
+          debugLog(
+            `Webcam ready: ${webcamElement.videoWidth}x${webcamElement.videoHeight}`
+          );
+          webcamElement.style.border = "2px solid green";
+          return true;
+        } else {
+          webcamReadyStatus.textContent = "Not Ready";
+          webcamReadyStatus.className = "status-value status-alert";
+          debugLog(
+            `Webcam not ready: readyState=${webcamElement.readyState} dimensions=${webcamElement.videoWidth}x${webcamElement.videoHeight}`
+          );
+          return false;
+        }
+      }
+
+      // Start monitoring with improved error handling
+      function startMonitoring() {
+        debugLog("Starting monitoring interval");
+        checkWebcamReady();
+
+        // Add visual indicator that monitoring is active
+        const monitoringInfo = document.createElement("div");
+        monitoringInfo.className = "monitoring-active-indicator";
+        monitoringInfo.style.position = "absolute";
+        monitoringInfo.style.top = "5px";
+        monitoringInfo.style.right = "5px";
+        monitoringInfo.style.backgroundColor = "rgba(0,255,0,0.5)";
+        monitoringInfo.style.borderRadius = "50%";
+        monitoringInfo.style.width = "10px";
+        monitoringInfo.style.height = "10px";
+        monitoringInfo.style.animation = "pulse 2s infinite";
+        webcamElement.parentElement.style.position = "relative";
+        webcamElement.parentElement.appendChild(monitoringInfo);
+
+        // Add style for animation
+        const style = document.createElement("style");
+        style.textContent = `
+          @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+          }
+        `;
+        document.head.appendChild(style);
+
+        // Clear any existing interval
+        if (monitoringInterval) clearInterval(monitoringInterval);
+
+        // Schedule regular monitoring
+        monitoringInterval = setInterval(() => {
+          try {
+            captureAndSendFrame();
+          } catch (error) {
+            debugLog("Error in monitoring interval:", error.message);
+          }
+        }, 3000); // Every 3 seconds to reduce server load
+
+        // Schedule separate voice verification at longer intervals
+        voiceVerificationInterval = setInterval(() => {
+          try {
+            sendVoiceVerification();
+          } catch (error) {
+            debugLog("Error in voice verification interval:", error.message);
+          }
+        }, VOICE_VERIFICATION_INTERVAL); // Every 15 seconds
+
+        // Do an immediate capture
+        setTimeout(captureAndSendFrame, 500);
+
+        // Enable submit buttons now that monitoring is active
+        document.getElementById("submitBtn").disabled = false;
+        document.getElementById("emergencySubmitBtn").disabled = false;
+      }
+
+      // Separate function to capture and send frame
+      async function captureAndSendFrame() {
+        if (!checkWebcamReady()) {
+          debugLog("Webcam not ready for capture, skipping");
+          return;
+        }
+
+        try {
+          // Create a canvas to capture the frame
+          const canvas = document.createElement("canvas");
+          canvas.width = webcamElement.videoWidth;
+          canvas.height = webcamElement.videoHeight;
+          const context = canvas.getContext("2d");
+
+          // Draw the current frame from video to canvas
+          context.drawImage(webcamElement, 0, 0, canvas.width, canvas.height);
+          debugLog("Frame captured successfully");
+
+          // Convert to JPEG data URL
+          const frameData = canvas.toDataURL("image/jpeg", 0.8); // 80% quality for smaller size
+          
+          // Send to server
+          await sendFrameForAnalysis(frameData);
+        } catch (error) {
+          debugLog("Error capturing frame:", error.message);
+
+          // If video is paused, try to restart it
+          if (webcamElement.paused) {
+            debugLog("Video is paused, attempting to restart...");
+            webcamElement
+              .play()
+              .then(() => debugLog("Video playback resumed"))
+              .catch((e) => debugLog("Failed to resume video:", e.message));
+          }
+        }
+      }
+
+      // Send frame for analysis with better error handling
+      async function sendFrameForAnalysis(frameData) {
+        try {
+          debugLog("Sending frame to server...");
+
+          // Get the session ID from the page
+          const sessionId = "{{ session_id }}";
+          debugLog(`Using session ID: ${sessionId}`);
+
+          // Create form data
+          const formData = new FormData();
+          formData.append("frame_data", frameData);
+          formData.append("session_id", sessionId);
+          
+          // No audio in regular monitoring requests to reduce size
+          // We use a separate endpoint for voice verification
+
+          // Set timeout to avoid hanging requests
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+          // Send request
+          const response = await fetch("/api/monitor", {
+            method: "POST",
+            body: formData,
+            signal: controller.signal,
+          });
+
+          // Clear timeout
+          clearTimeout(timeoutId);
+
+          // Check response
+          debugLog(`Server response status: ${response.status}`);
+          if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+          }
+
+          // Parse response
+          const result = await response.json();
+
+          if (result.success) {
+            debugLog("Monitoring successful", JSON.stringify(result.results));
+            processMonitoringResults(result.results, result.warnings);
+
+            // Check for termination
+            if (result.terminate) {
+              debugLog("Server requested exam termination:", result.reason);
+              terminateExam(result.reason);
+            }
+          } else {
+            debugLog("Server reported error:", result.error);
+            // Don't show every server error to user - could be noisy
+            if (
+              result.error.includes("session") ||
+              result.error.includes("terminated")
+            ) {
+              showAlert(`Error: ${result.error}`);
+            }
+          }
+        } catch (error) {
+          if (error.name === "AbortError") {
+            debugLog("Request timeout - server took too long to respond");
+          } else {
+            debugLog("Error sending frame to server:", error.message);
+          }
+
+          // Update UI to show monitoring issue
+          faceStatus.textContent = "Connection Issue";
+          faceStatus.className = "status-value status-warning";
+          statusMessage.textContent = "Server communication problem";
+          statusMessage.className = "status-value status-warning";
+        }
+      }
+
+      // Process monitoring results with more conservative defaults and warning counter
+      function processMonitoringResults(results, warnings) {
+        // Update warnings counter
+        currentWarnings = warnings || currentWarnings;
+        warningCount.textContent = currentWarnings;
+        
+        // Update warning count styling based on number of warnings
+        if (currentWarnings >= 4) {
+          warningCount.className = "status-value status-alert";
+        } else if (currentWarnings >= 2) {
+          warningCount.className = "status-value status-warning";
+        } else {
+          warningCount.className = "status-value status-normal";
+        }
+        
+        // If warnings increased, play beep sound
+        if (currentWarnings > previousWarnings) {
+          playBeepSound();
+          previousWarnings = currentWarnings;
+        }
+
+        // Ensure we have results object
+        results = results || {};
+
+        // Face Detection
+        if (results.face_count !== undefined) {
+          if (results.face_count === 0) {
+            faceStatus.textContent = "Not Detected";
+            faceStatus.className = "status-value status-alert";
+            // Add a visual warning
+            showAlert("WARNING: Your face is not visible");
+          } else if (results.face_count > 1) {
+            faceStatus.textContent = `${results.face_count} Faces`;
+            faceStatus.className = "status-value status-alert";
+            // Add a visual warning
+            showAlert("WARNING: Multiple faces detected");
+          } else {
+            faceStatus.textContent = "Detected";
+            faceStatus.className = "status-value status-normal";
+          }
+        }
+
+        // Identity Verification
+        if (results.identity_match !== undefined) {
+          const matchValue = results.identity_match.toString().toLowerCase();
+          if (matchValue === "true") {
+            identityStatus.textContent = "Verified";
+            identityStatus.className = "status-value status-normal";
+          } else {
+            identityStatus.textContent = "Not Verified";
+            identityStatus.className = "status-value status-alert";
+            // Add a visual warning
+            showAlert("WARNING: Identity verification failed");
+          }
+        }
+
+        // Head Position
+        if (results.head_pose) {
+          const headPose = results.head_pose.toString();
+          if (headPose.includes("Normal")) {
+            headStatus.textContent = "Normal";
+            headStatus.className = "status-value status-normal";
+          } else if (headPose === "Unknown" || headPose === "Not Available") {
+            headStatus.textContent = headPose;
+            headStatus.className = "status-value status-warning";
+          } else {
+            headStatus.textContent = headPose;
+            headStatus.className = "status-value status-alert";
+            // Add a visual warning
+            showAlert(`WARNING: Head position issue - ${headPose}`);
+          }
+        }
+
+        // Audio Monitoring
+        if (results.multiple_speakers !== undefined) {
+          if (results.multiple_speakers) {
+            audioStatus.textContent = "Multiple Voices";
+            audioStatus.className = "status-value status-alert";
+            // Add a visual warning
+            showAlert("WARNING: Multiple voices detected");
+          } else if (results.ambient_noise) {
+            audioStatus.textContent = "Noise Detected";
+            audioStatus.className = "status-value status-alert";
+            // Add a visual warning
+            showAlert("WARNING: Unusual ambient noise detected");
+          } else {
+            audioStatus.textContent = "Normal";
+            audioStatus.className = "status-value status-normal";
+          }
+        }
+
+        // Voice Authentication - No alerts, just parameter display
+        if (results.different_speaker !== undefined) {
+          const confidence = results.voice_match_confidence || 0;
+          
+          if (results.different_speaker) {
+            voiceAuthStatus.textContent = `Not Verified (${Math.round(confidence * 100)}%)`;
+            voiceAuthStatus.className = "status-value status-alert";
+            // REMOVED: Alert for voice authentication
+          } else if (confidence > 0) {
+            voiceAuthStatus.textContent = `Verified (${Math.round(confidence * 100)}%)`;
+            voiceAuthStatus.className = "status-value status-normal";
+          } else {
+            voiceAuthStatus.textContent = "Not Available";
+            voiceAuthStatus.className = "status-value status-warning";
+          }
+        }
+
+        // Object Detection - display in status panel
+        if (results.prohibited_items && document.getElementById("prohibited-items-status")) {
+          const prohibitedItemsStatus = document.getElementById("prohibited-items-status");
+          if (results.prohibited_items.length > 0) {
+            const items = results.prohibited_items.join(', ');
+            prohibitedItemsStatus.textContent = items;
+            prohibitedItemsStatus.className = "status-value status-alert";
+            showAlert(`ALERT: Prohibited item(s) detected: ${items}! Remove them immediately.`);
+          } else {
+            prohibitedItemsStatus.textContent = "None";
+            prohibitedItemsStatus.className = "status-value status-normal";
+          }
+        }
+
+        // Update overall status message based on monitoring results
+        if (results.alert) {
+          statusMessage.textContent = results.alert;
+          statusMessage.className = "status-value status-alert";
+        } else if (currentWarnings > 0) {
+          statusMessage.textContent = `Warning ${currentWarnings}/5`;
+          statusMessage.className = "status-value status-warning";
+        } else {
+          statusMessage.textContent = "OK";
+          statusMessage.className = "status-value status-normal";
+        }
+      }
+
+      // Show alert banner
+      function showAlert(message) {
+        alertMessage.textContent = message;
+        alertBanner.style.display = "block";
+
+        // Add sound effect for alerts
+        playBeepSound();
+
+        // Make sure the alert is visible by scrolling to top
+        window.scrollTo(0, 0);
+        
+        // Auto-dismiss the alert after 5 seconds
+        setTimeout(hideAlert, 5000);
+      }
+
+      // Play beep sound function
+      function playBeepSound() {
+        try {
+          // Create an audio context
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Create an oscillator (beep sound generator)
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          // Configure the oscillator
+          oscillator.type = 'sine'; // Sine wave = smooth beep
+          oscillator.frequency.value = 800; // Higher pitch = more attention-grabbing
+          gainNode.gain.value = 0.3; // Lower volume (0-1)
+          
+          // Connect the nodes
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          // Play the beep for 300ms
+          oscillator.start();
+          setTimeout(() => {
+            oscillator.stop();
+          }, 300);
+        } catch (e) {
+          console.error("Could not play alert sound:", e);
+        }
+      }
+
+      // Hide alert banner
+      function hideAlert() {
+        alertBanner.style.display = "none";
+      }
+
+      // Terminate exam
+      function terminateExam(reason) {
+        debugLog(`Terminating exam: ${reason}`);
+        
+        // Stop monitoring
+        if (monitoringInterval) {
+          clearInterval(monitoringInterval);
+          monitoringInterval = null;
+        }
+        
+        // Stop webcam stream
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+          webcamElement.srcObject = null;
+        }
+        
+        // Update UI
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("emergencySubmitBtn").disabled = true;
+        
+        // Set reason in modal
+        terminationReason.textContent = `Reason: ${reason || 'Policy violation'}`;
+        
+        // Show termination modal
+        terminationModal.show();
+        
+        // Add event listener to return to login button
+        document.getElementById("returnToLoginBtn").addEventListener("click", () => {
+          window.location.href = "/login";
+        });
+      }
+
+      // Exit exam (from modal)
+      document
+        .getElementById("returnToLoginBtn")
+        .addEventListener("click", () => {
+          window.location.href = "/login";
+        });
+
+      // Exam timer
+      function startExamTimer(durationMinutes) {
+        let duration = durationMinutes * 60;
+        const timerElement = document.getElementById("examTimer");
+        if (!timerElement) {
+          debugLog("Error: Timer element not found!");
+          return;
+        }
+        timerElement.style.display = "block"; // Make timer visible
+        debugLog(`Starting exam timer for ${durationMinutes} minutes`);
+
+        const timerInterval = setInterval(() => {
+          if (duration <= 0) {
+            clearInterval(timerInterval);
+            debugLog("Exam time expired");
+            // Check if modal is already shown before auto-submitting
+            if (!terminationModal._isShown) {
+              submitExam("Time Expired");
+            }
+            return;
+          }
+
+          duration--; // Decrement first
+
+          const hours = Math.floor(duration / 3600);
+          const minutes = Math.floor((duration % 3600) / 60);
+          const seconds = duration % 60;
+
+          timerElement.textContent = `Time Remaining: ${hours
+            .toString()
+            .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
+            .toString()
+            .padStart(2, "0")}`;
+
+          // Add visual indicator when time is running low
+          if (duration < 300 && duration > 0) {
+            // Less than 5 minutes
+            timerElement.style.color = "red";
+            timerElement.style.fontWeight = "bold";
+          } else if (duration > 0) {
+            timerElement.style.color = "#333"; // Reset color
+            timerElement.style.fontWeight = "bold";
+          }
+        }, 1000);
+      }
+
+      // Submit exam button listeners
+      document
+        .getElementById("submitBtn")
+        .addEventListener("click", () => submitExam("User Submitted"));
+      document
+        .getElementById("emergencySubmitBtn")
+        .addEventListener("click", function () {
+          if (
+            confirm(
+              "Are you sure you want to submit your exam? This action cannot be undone."
+            )
+          ) {
+            debugLog("Emergency submit button clicked");
+            submitExam("User Emergency Submit");
+          }
+        });
+
+      // Submit exam function
+      function submitExam(reason = "User Submitted") {
+        debugLog("Submitting exam... Reason:", reason);
+
+        // Disable submit buttons to prevent double submission
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("emergencySubmitBtn").disabled = true;
+
+        // Stop monitoring
+        if (monitoringInterval) {
+          clearInterval(monitoringInterval);
+          monitoringInterval = null;
+        }
+
+        // Stop webcam stream if active
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+          webcamElement.srcObject = null;
+        }
+
+        // Show submission in progress
+        showAlert("Submitting your exam, please wait...");
+
+        // Submit to server
+        fetch("/api/end-test", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reason: reason }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Server error: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            debugLog("Exam submitted successfully");
+            // Show a completion message that blocks further interaction
+            const completionDiv = document.createElement("div");
+            completionDiv.style.position = "fixed";
+            completionDiv.style.top = "0";
+            completionDiv.style.left = "0";
+            completionDiv.style.width = "100%";
+            completionDiv.style.height = "100%";
+            completionDiv.style.backgroundColor = "rgba(255,255,255,0.9)";
+            completionDiv.style.zIndex = "9999";
+            completionDiv.style.display = "flex";
+            completionDiv.style.flexDirection = "column";
+            completionDiv.style.alignItems = "center";
+            completionDiv.style.justifyContent = "center";
+            completionDiv.style.padding = "20px";
+            completionDiv.style.textAlign = "center";
+
+            const icon = document.createElement("div");
+            icon.innerHTML = "✅";
+            icon.style.fontSize = "64px";
+            icon.style.marginBottom = "20px";
+
+            const heading = document.createElement("h2");
+            heading.textContent = "Exam Submitted Successfully";
+            heading.style.marginBottom = "20px";
+
+            const message = document.createElement("p");
+            message.textContent = "Thank you for completing the exam.";
+            message.style.marginBottom = "30px";
+
+            const button = document.createElement("button");
+            button.textContent = "Return to Login";
+            button.className = "btn btn-primary";
+            button.onclick = () => (window.location.href = "/login");
+
+            completionDiv.appendChild(icon);
+            completionDiv.appendChild(heading);
+            completionDiv.appendChild(message);
+            completionDiv.appendChild(button);
+
+            document.body.appendChild(completionDiv);
+
+            // Redirect after 3 seconds
+            setTimeout(() => {
+              window.location.href = "/login";
+            }, 3000);
+          })
+          .catch((error) => {
+            debugLog("Error submitting exam:", error.message);
+
+            // Re-enable buttons if submission failed
+            document.getElementById("submitBtn").disabled = false;
+            document.getElementById("emergencySubmitBtn").disabled = false;
+
+            // Show error message
+            showAlert(
+              `Error submitting exam: ${error.message}. Please try again.`
+            );
+          });
+      }
+
+      // Initialize when page loads
+      window.addEventListener("DOMContentLoaded", () => {
+        debugLog("Page loaded, initializing...");
+
+        // Set default values for monitoring panel
+        faceStatus.textContent = "Waiting...";
+        identityStatus.textContent = "Waiting...";
+        headStatus.textContent = "Waiting...";
+        audioStatus.textContent = "Waiting...";
+        voiceAuthStatus.textContent = "Waiting...";
+        warningCount.textContent = "0";
+        statusMessage.textContent = "Starting monitoring...";
+
+        // Disable submit buttons until monitoring starts
+        document.getElementById("submitBtn").disabled = true;
+        document.getElementById("emergencySubmitBtn").disabled = true;
+
+        // Initialize webcam
+        initWebcam();
+
+        // Start exam timer
+        startExamTimer(60); // 60-minute exam
+      });
+
+      // Prevent tab switching and window minimizing (basic)
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+          // Only show alert if exam is not already terminated/submitted
+          if (
+            !terminationModal._isShown &&
+            !document.getElementById("submitBtn").disabled
+          ) {
+            showAlert("WARNING: Leaving the exam window is not allowed!");
+            // Consider adding a violation via API call here in a real system
+            debugLog("User left the exam window");
+          }
+        }
+      });
+
+      // Prevent common shortcuts
+      document.addEventListener("keydown", (e) => {
+        if ((e.altKey && e.key === "Tab") || (e.ctrlKey && e.key === "Tab")) {
+          e.preventDefault();
+          if (
+            !terminationModal._isShown &&
+            !document.getElementById("submitBtn").disabled
+          ) {
+            showAlert(
+              "WARNING: Keyboard shortcuts like Alt+Tab/Ctrl+Tab are not allowed!"
+            );
+          }
+        }
+
+        // Add simulation toggles for testing
+        if (e.key === "p") {
+          // Toggle phone simulation
+          toggleSimulation("phone");
+        } else if (e.key === "b") {
+          // Toggle book simulation
+          toggleSimulation("book");
+        }
+      });
+
+      // Function to toggle simulations
+      function toggleSimulation(type) {
+        let endpoint = "";
+        if (type === "phone") {
+          endpoint = "/api/toggle-simulate-phone";
+        } else if (type === "book") {
+          endpoint = "/api/toggle-simulate-book";
+        }
+
+        if (endpoint) {
+          fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                debugLog(
+                  `${type} simulation ${
+                    data[type + "_simulation"] ? "enabled" : "disabled"
+                  }`
+                );
+                
+                // Update simulation status indicators in UI
+                const statusElement = document.getElementById(`${type}-simulation-status`);
+                if (statusElement) {
+                  if (data[type + "_simulation"]) {
+                    statusElement.textContent = "Enabled";
+                    statusElement.className = "badge bg-warning";
+                  } else {
+                    statusElement.textContent = "Disabled";
+                    statusElement.className = "badge bg-secondary";
+                  }
+                }
+                
+                showAlert(
+                  `${type.charAt(0).toUpperCase() + type.slice(1)} simulation ${
+                    data[type + "_simulation"] ? "enabled" : "disabled"
+                  }`
+                );
+              }
+            })
+            .catch((error) => {
+              debugLog(`Error toggling ${type} simulation:`, error);
+            });
+        }
+      }
+
+      // Start audio monitoring and recording
+      function startAudioMonitoring() {
+        if (!stream || mediaRecorder) return; // Already recording or no stream
+        
+        try {
+          // Get audio track from stream
+          const audioTracks = stream.getAudioTracks();
+          if (audioTracks.length === 0) {
+            debugLog("No audio track available");
+            return;
+          }
+          
+          // Start recording with lower bitrate
+          const options = { 
+            audioBitsPerSecond: 16000, // Lower bitrate for smaller files
+            mimeType: 'audio/webm;codecs=opus' 
+          };
+          mediaRecorder = new MediaRecorder(stream, options);
+          
+          // Set up event handlers
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              audioChunks.push(event.data);
+            }
+          };
+          
+          mediaRecorder.onstart = () => {
+            debugLog("Audio recording started");
+            audioStatus.textContent = "Recording";
+            audioStatus.className = "status-value status-normal";
+            debugLog("Audio monitoring started");
+          };
+          
+          mediaRecorder.onerror = (e) => {
+            debugLog("Error recording audio:", e.error);
+            audioStatus.textContent = "Error";
+            audioStatus.className = "status-value status-alert";
+          };
+          
+          // Start recording
+          mediaRecorder.start(1000); // Get data more frequently (every 1 second)
+        } catch (error) {
+          debugLog("Error starting audio monitoring:", error.message);
+          audioStatus.textContent = "Not Available";
+          audioStatus.className = "status-value status-warning";
+        }
+      }
+
+      // Add the following function for voice verification
+      async function sendVoiceVerification() {
+        // Check if enough time has passed since last verification
+        const now = Date.now();
+        if (now - lastVoiceVerificationTime < VOICE_VERIFICATION_INTERVAL) {
+          return; // Skip if we verified recently
+        }
+        
+        if (!stream || !checkWebcamReady()) {
+          debugLog("Stream not ready for voice verification");
+          return;
+        }
+        
+        try {
+          // Start recording for voice verification (short sample)
+          debugLog("Starting audio recording for voice verification");
+          
+          // Create a new MediaRecorder with low bitrate
+          if (mediaRecorder) {
+            // If already recording, stop it first
+            try {
+              mediaRecorder.stop();
+            } catch (e) {}
+            mediaRecorder = null;
+            audioChunks = [];
+          }
+          
+          // Get audio track from stream
+          const audioTracks = stream.getAudioTracks();
+          if (audioTracks.length === 0) {
+            debugLog("No audio track available for voice verification");
+            return;
+          }
+          
+          // Create a MediaStream with just the audio track
+          const audioStream = new MediaStream(audioTracks);
+          
+          // Create a recorder with very low bitrate for smaller file
+          const options = { 
+            audioBitsPerSecond: 8000, // Very low bitrate
+            mimeType: 'audio/webm;codecs=opus' 
+          };
+          mediaRecorder = new MediaRecorder(audioStream, options);
+          
+          // Set up event handlers
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+              audioChunks.push(event.data);
+            }
+          };
+          
+          mediaRecorder.onstop = async () => {
+            debugLog("Audio recording completed, sending for verification");
+            
+            try {
+              // Create a blob from the audio chunks
+              const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+              
+              // Skip if too large
+              if (audioBlob.size > 500 * 1024) { // 500KB max
+                debugLog(`Audio blob too large: ${Math.round(audioBlob.size/1024)}KB, skipping`);
+                audioChunks = [];
+                return;
+              }
+              
+              // Convert to base64
+              const reader = new FileReader();
+              reader.readAsDataURL(audioBlob);
+              
+              await new Promise(resolve => {
+                reader.onloadend = async () => {
+                  const audioData = reader.result;
+                  
+                  // Get the session ID
+                  const sessionId = "{{ session_id }}";
+                  
+                  // Send to server using fetch to dedicated voice endpoint
+                  try {
+                    const response = await fetch("/api/verify-voice", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                      },
+                      body: `session_id=${sessionId}&audio_data=${encodeURIComponent(audioData)}`,
+                    });
+                    
+                    if (response.ok) {
+                      const result = await response.json();
+                      debugLog("Voice verification result:", result);
+                      
+                      if (result.success) {
+                        // Update UI with verification result
+                        updateVoiceVerificationUI(
+                          result.different_speaker, 
+                          result.voice_match_confidence
+                        );
+                      }
+                    } else {
+                      debugLog("Error in voice verification:", response.status);
+                    }
+                  } catch (error) {
+                    debugLog("Error sending voice data:", error);
+                  }
+                  
+                };
+              });
+              
+            } catch (error) {
+              debugLog("Error processing audio for verification:", error);
+            } finally {
+              // Clear audio chunks
+              audioChunks = [];
+            }
+          };
+          
+          // Start recording for 3 seconds
+          mediaRecorder.start();
+          setTimeout(() => {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+              mediaRecorder.stop();
+            }
+          }, 3000);
+          
+          // Update last verification time
+          lastVoiceVerificationTime = now;
+          
+        } catch (error) {
+          debugLog("Error in voice verification:", error);
+        }
+      }
+      
+      function updateVoiceVerificationUI(differentSpeaker, confidence) {
+        if (differentSpeaker) {
+          voiceAuthStatus.textContent = `Not Verified (${Math.round(confidence * 100)}%)`;
+          voiceAuthStatus.className = "status-value status-alert";
+          showAlert("WARNING: Voice authentication failed - different speaker detected");
+        } else {
+          voiceAuthStatus.textContent = `Verified (${Math.round(confidence * 100)}%)`;
+          voiceAuthStatus.className = "status-value status-normal";
+        }
+      }
+
+      // Add event listeners for simulation controls
+      document.getElementById("disable-simulations-btn").addEventListener("click", function() {
+        fetch("/api/disable-all-simulations", {
+          method: "POST",
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Update simulation status indicators
+            document.getElementById("phone-simulation-status").textContent = data.phone_simulation ? "Enabled" : "Disabled";
+            document.getElementById("phone-simulation-status").className = data.phone_simulation ? "badge bg-danger" : "badge bg-secondary";
+            
+            document.getElementById("book-simulation-status").textContent = data.book_simulation ? "Enabled" : "Disabled";
+            document.getElementById("book-simulation-status").className = data.book_simulation ? "badge bg-danger" : "badge bg-secondary";
+            
+            debugLog("All simulations disabled");
+          }
+        })
+        .catch(error => {
+          debugLog("Error disabling simulations:", error);
+        });
+      });
+
+      // Get initial simulation status
+      fetch("/api/simulation-status")
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Update simulation status indicators
+          document.getElementById("phone-simulation-status").textContent = data.phone_simulation ? "Enabled" : "Disabled";
+          document.getElementById("phone-simulation-status").className = data.phone_simulation ? "badge bg-danger" : "badge bg-secondary";
+          
+          document.getElementById("book-simulation-status").textContent = data.book_simulation ? "Enabled" : "Disabled";
+          document.getElementById("book-simulation-status").className = data.book_simulation ? "badge bg-danger" : "badge bg-secondary";
+        }
+      })
+      .catch(error => {
+        debugLog("Error getting simulation status:", error);
+      });
+
+      // Add a close button to alerts to manually dismiss them
+      document.addEventListener('DOMContentLoaded', function() {
+        // Add a close button to the alert banner if it doesn't have one already
+        const alertBanner = document.getElementById('alertBanner');
+        if (alertBanner && !document.getElementById('closeAlertBtn')) {
+          const closeBtn = document.createElement('button');
+          closeBtn.id = 'closeAlertBtn';
+          closeBtn.className = 'btn-close';
+          closeBtn.setAttribute('aria-label', 'Close');
+          closeBtn.style.position = 'absolute';
+          closeBtn.style.right = '10px';
+          closeBtn.style.top = '10px';
+          closeBtn.addEventListener('click', hideAlert);
+          alertBanner.appendChild(closeBtn);
+          
+          // Make sure alertBanner has position relative for proper button placement
+          alertBanner.style.position = 'relative';
+        }
+      });
+    </script>
+  </body>
+</html>

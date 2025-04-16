@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exam Setup - Identity Verification</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+        padding-top: 40px;
+      }
+      .setup-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .webcam-container {
+        position: relative;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      #webcam {
+        width: 100%;
+        border-radius: 8px;
+        border: 2px solid #dee2e6;
+      }
+      .capture-btn {
+        display: block;
+        margin: 10px auto;
+        padding: 10px 20px;
+      }
+      .instructions {
+        background-color: #f1f8ff;
+        border-left: 4px solid #0d6efd;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+      }
+      .instructions h5 {
+        color: #0d6efd;
+        margin-bottom: 10px;
+      }
+      .center-capture {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+      }
+      .preview-container {
+        text-align: center;
+        margin: 20px 0;
+        display: none;
+      }
+      #photoPreview {
+        max-width: 300px;
+        border: 2px solid #198754;
+        border-radius: 8px;
+      }
+      .recording-controls {
+        text-align: center;
+        margin: 20px 0;
+      }
+      .recording-status {
+        font-weight: bold;
+        color: #dc3545;
+        margin: 10px 0;
+        display: none;
+      }
+      .setup-steps {
+        counter-reset: step-counter;
+        list-style: none;
+        padding-left: 0;
+      }
+      .setup-steps li {
+        counter-increment: step-counter;
+        margin-bottom: 15px;
+        padding-left: 40px;
+        position: relative;
+      }
+      .setup-steps li::before {
+        content: counter(step-counter);
+        background-color: #0d6efd;
+        color: white;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+      }
+      .progress-container {
+        margin: 30px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container setup-container">
+      <h1 class="text-center mb-4">Exam Proctoring Setup</h1>
+
+      <div class="progress-container">
+        <div class="progress mb-2" style="height: 20px">
+          <div
+            id="setupProgress"
+            class="progress-bar"
+            role="progressbar"
+            style="width: 0%"
+            aria-valuenow="0"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            0%
+          </div>
+        </div>
+        <p class="text-center text-muted">
+          Complete all steps to continue to your exam
+        </p>
+      </div>
+
+      <div class="instructions">
+        <h5>Why We Need This</h5>
+        <p>
+          To ensure academic integrity, we need to establish your identity and
+          voice baseline. This information will be used during the exam to
+          verify that you are the only person taking the test.
+        </p>
+      </div>
+
+      <div class="alert alert-warning" id="browserAlert">
+        <strong>Important:</strong> Please allow camera and microphone access
+        when prompted by your browser.
+      </div>
+
+      <ol class="setup-steps">
+        <li>
+          <h4>Take Identity Photo</h4>
+          <p>
+            We'll capture a clear photo of your face for identity verification
+            during the exam.
+          </p>
+
+          <div class="webcam-container">
+            <video id="webcam" autoplay playsinline></video>
+          </div>
+
+          <div class="center-capture">
+            <button id="captureBtn" class="btn btn-primary capture-btn">
+              <i class="bi bi-camera"></i> Capture Photo
+            </button>
+          </div>
+
+          <div class="preview-container" id="photoPreviewContainer">
+            <h5>Photo Preview</h5>
+            <img id="photoPreview" src="" />
+            <div class="mt-2">
+              <button id="retakeBtn" class="btn btn-outline-secondary btn-sm">
+                Retake Photo
+              </button>
+            </div>
+          </div>
+        </li>
+
+        <li>
+          <h4>Record Voice Sample</h4>
+          <p>Please read the following sentence out loud when recording:</p>
+          <div class="card mb-3">
+            <div class="card-body">
+              <p class="card-text fw-bold">
+                "My name is [your name] and I am taking this examination without
+                assistance."
+              </p>
+            </div>
+          </div>
+
+          <div class="recording-controls">
+            <button id="startRecordingBtn" class="btn btn-danger">
+              <i class="bi bi-mic"></i> Start Recording
+            </button>
+            <button id="stopRecordingBtn" class="btn btn-secondary" disabled>
+              <i class="bi bi-stop-circle"></i> Stop Recording
+            </button>
+            <p id="recordingStatus" class="recording-status">
+              Recording in progress...
+            </p>
+            <div id="audioPreview" class="mt-3 d-none">
+              <audio id="audioPlayer" controls></audio>
+              <div class="mt-2">
+                <button
+                  id="rerecordBtn"
+                  class="btn btn-outline-secondary btn-sm"
+                >
+                  Record Again
+                </button>
+              </div>
+            </div>
+            <!-- Add fallback button for testing -->
+            <div class="mt-3">
+              <button id="bypassAudioBtn" class="btn btn-warning btn-sm">
+                <i class="bi bi-skip-forward"></i> Bypass Audio for Testing
+              </button>
+            </div>
+          </div>
+        </li>
+      </ol>
+
+      <div class="text-center mt-4">
+        <button id="continueBtn" class="btn btn-success btn-lg" disabled>
+          Continue to Exam
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Variables to track completion status
+      let photoTaken = false;
+      let voiceRecorded = false;
+      let mediaRecorder = null;
+      let audioChunks = [];
+      let audioBlob = null;
+      let stream = null;
+
+      // Check browser compatibility for recording
+      const hasGetUserMedia = !!(
+        navigator.mediaDevices && navigator.mediaDevices.getUserMedia
+      );
+      const hasSupportedMimeType = function () {
+        if (!window.MediaRecorder) {
+          return false;
+        }
+
+        // Check for supported mime types
+        const mimeTypes = [
+          "audio/webm",
+          "audio/webm;codecs=opus",
+          "audio/ogg;codecs=opus",
+          "audio/mp4",
+          "audio/mpeg",
+        ];
+
+        for (const type of mimeTypes) {
+          if (MediaRecorder.isTypeSupported(type)) {
+            return type;
+          }
+        }
+
+        return false;
+      };
+
+      const supportedMimeType = hasSupportedMimeType();
+
+      // DOM elements
+      const webcamElement = document.getElementById("webcam");
+      const captureBtn = document.getElementById("captureBtn");
+      const photoPreview = document.getElementById("photoPreview");
+      const photoPreviewContainer = document.getElementById(
+        "photoPreviewContainer"
+      );
+      const retakeBtn = document.getElementById("retakeBtn");
+      const startRecordingBtn = document.getElementById("startRecordingBtn");
+      const stopRecordingBtn = document.getElementById("stopRecordingBtn");
+      const recordingStatus = document.getElementById("recordingStatus");
+      const audioPreview = document.getElementById("audioPreview");
+      const audioPlayer = document.getElementById("audioPlayer");
+      const rerecordBtn = document.getElementById("rerecordBtn");
+      const continueBtn = document.getElementById("continueBtn");
+      const setupProgress = document.getElementById("setupProgress");
+
+      // Initialize webcam
+      async function initWebcam() {
+        try {
+          if (!hasGetUserMedia) {
+            throw new Error(
+              "Your browser doesn't support accessing media devices. Please try a different browser like Chrome or Firefox."
+            );
+          }
+
+          console.log(
+            "Browser compatibility: MediaRecorder support:",
+            !!window.MediaRecorder
+          );
+          console.log("Supported mime type:", supportedMimeType);
+
+          if (!supportedMimeType) {
+            console.warn("No supported audio recording mime types found");
+            document.getElementById("browserAlert").innerHTML =
+              "<strong>Warning:</strong> Your browser may not fully support audio recording. You can continue, but audio monitoring may be limited.";
+            document.getElementById("browserAlert").className =
+              "alert alert-warning";
+          }
+
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+          });
+          webcamElement.srcObject = stream;
+          document.getElementById("browserAlert").style.display = "none";
+
+          // Enable recording buttons once media access is granted
+          startRecordingBtn.disabled = false;
+          console.log("Camera and microphone access granted successfully");
+
+          // Add fallback for browsers without MediaRecorder support
+          if (!window.MediaRecorder) {
+            setupFallbackRecording();
+          }
+        } catch (error) {
+          console.error("Error accessing media devices:", error);
+          alert(
+            "Unable to access camera or microphone. Please ensure you have granted permission. Error: " +
+              error.message
+          );
+          // Display error in the UI
+          document.getElementById("browserAlert").innerHTML =
+            "<strong>Error:</strong> " +
+            error.message +
+            "<br>Please ensure you have granted camera and microphone permissions in your browser settings.";
+          document.getElementById("browserAlert").style.display = "block";
+        }
+      }
+
+      // Fallback recording for browsers without MediaRecorder
+      function setupFallbackRecording() {
+        console.log("Setting up fallback recording mechanism");
+        startRecordingBtn.addEventListener("click", function () {
+          alert(
+            "Audio recording is not fully supported in your browser. For demonstration purposes, we'll simulate a successful recording."
+          );
+          recordingStatus.style.display = "block";
+          setTimeout(function () {
+            // Create a mock audio file
+            const mockAudioBlob = new Blob([], { type: "audio/webm" });
+            audioBlob = mockAudioBlob;
+
+            // Show mock audio preview
+            audioPreview.classList.remove("d-none");
+            audioPlayer.src = URL.createObjectURL(
+              new Blob([new ArrayBuffer(1000)], { type: "audio/webm" })
+            );
+
+            // Update status
+            recordingStatus.style.display = "none";
+            voiceRecorded = true;
+            updateProgress();
+          }, 3000);
+        });
+      }
+
+      // Capture photo
+      captureBtn.addEventListener("click", () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = webcamElement.videoWidth;
+        canvas.height = webcamElement.videoHeight;
+        canvas.getContext("2d").drawImage(webcamElement, 0, 0);
+
+        photoPreview.src = canvas.toDataURL("image/jpeg");
+        photoPreviewContainer.style.display = "block";
+        photoTaken = true;
+        updateProgress();
+      });
+
+      // Retake photo
+      retakeBtn.addEventListener("click", () => {
+        photoPreviewContainer.style.display = "none";
+        photoTaken = false;
+        updateProgress();
+      });
+
+      // Start recording voice
+      startRecordingBtn.addEventListener("click", () => {
+        try {
+          // Remove existing handler for fallback
+          if (!window.MediaRecorder) {
+            return; // Let the fallback handler take over
+          }
+
+          console.log("Starting audio recording...");
+          audioChunks = [];
+
+          if (!stream) {
+            throw new Error(
+              "Media stream not available. Please refresh the page and grant permissions."
+            );
+          }
+
+          const audioStream = stream.clone();
+          const audioTracks = audioStream.getAudioTracks();
+
+          if (audioTracks.length === 0) {
+            throw new Error("No audio track found in the media stream.");
+          }
+
+          console.log("Audio tracks found:", audioTracks.length);
+
+          const options = {};
+          if (supportedMimeType) {
+            options.mimeType = supportedMimeType;
+          }
+
+          try {
+            mediaRecorder = new MediaRecorder(audioStream, options);
+            console.log("MediaRecorder created with options:", options);
+          } catch (err) {
+            console.error(
+              "Failed to create MediaRecorder with options, trying without options:",
+              err
+            );
+            mediaRecorder = new MediaRecorder(audioStream);
+          }
+
+          console.log("MediaRecorder state:", mediaRecorder.state);
+
+          mediaRecorder.addEventListener("dataavailable", (event) => {
+            console.log("Data available event, data size:", event.data.size);
+            audioChunks.push(event.data);
+          });
+
+          mediaRecorder.addEventListener("stop", () => {
+            console.log("Recording stopped, chunks:", audioChunks.length);
+            if (audioChunks.length === 0 || audioChunks[0].size === 0) {
+              alert(
+                "No audio data was captured. Please try again or check your microphone settings."
+              );
+              startRecordingBtn.disabled = false;
+              stopRecordingBtn.disabled = true;
+              return;
+            }
+
+            audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+            console.log("Audio blob created, size:", audioBlob.size);
+            audioPlayer.src = URL.createObjectURL(audioBlob);
+            audioPreview.classList.remove("d-none");
+            recordingStatus.style.display = "none";
+            voiceRecorded = true;
+            updateProgress();
+          });
+
+          mediaRecorder.addEventListener("error", (event) => {
+            console.error("MediaRecorder error:", event);
+            alert("Error during recording: " + event);
+          });
+
+          // Try with a shorter timeslice for more frequent dataavailable events
+          mediaRecorder.start(100);
+          console.log("Recording started with 100ms timeslice");
+
+          // For Safari and other problematic browsers, manually trigger stop after 5 seconds
+          // if no data is received
+          setTimeout(() => {
+            if (
+              audioChunks.length === 0 &&
+              mediaRecorder &&
+              mediaRecorder.state === "recording"
+            ) {
+              console.log(
+                "No audio chunks received after 5 seconds, stopping recorder"
+              );
+              mediaRecorder.stop();
+            }
+          }, 5000);
+
+          startRecordingBtn.disabled = true;
+          stopRecordingBtn.disabled = false;
+        } catch (error) {
+          console.error("Error starting recording:", error);
+          alert("Failed to start recording: " + error.message);
+          recordingStatus.textContent = "Recording failed: " + error.message;
+          recordingStatus.style.display = "block";
+        }
+      });
+
+      // Stop recording voice
+      stopRecordingBtn.addEventListener("click", () => {
+        try {
+          console.log("Stopping recording...");
+          if (mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+            console.log("MediaRecorder stopped");
+            startRecordingBtn.disabled = false;
+            stopRecordingBtn.disabled = true;
+          } else {
+            console.warn(
+              "MediaRecorder is not active, current state:",
+              mediaRecorder ? mediaRecorder.state : "undefined"
+            );
+            alert("No active recording found. Please try recording again.");
+            startRecordingBtn.disabled = false;
+            stopRecordingBtn.disabled = true;
+          }
+        } catch (error) {
+          console.error("Error stopping recording:", error);
+          alert("Error stopping recording: " + error.message);
+        }
+      });
+
+      // Re-record voice
+      rerecordBtn.addEventListener("click", () => {
+        audioPreview.classList.add("d-none");
+        voiceRecorded = false;
+        updateProgress();
+        startRecordingBtn.disabled = false;
+      });
+
+      // Add event listener for bypass button
+      document
+        .getElementById("bypassAudioBtn")
+        .addEventListener("click", () => {
+          console.log("Bypassing audio recording for testing purposes");
+
+          // Create a mock audio blob
+          const mockAudioBlob = new Blob([new ArrayBuffer(1000)], {
+            type: "audio/webm",
+          });
+          audioBlob = mockAudioBlob;
+
+          // Update UI
+          audioPreview.classList.remove("d-none");
+          if (audioPlayer) {
+            try {
+              audioPlayer.src = URL.createObjectURL(audioBlob);
+            } catch (e) {
+              console.warn("Could not create object URL:", e);
+            }
+          }
+
+          // Mark as recorded
+          voiceRecorded = true;
+          updateProgress();
+
+          alert(
+            "Audio recording has been bypassed for testing purposes. You can now continue to the exam."
+          );
+        });
+
+      // Update progress and enable continue button
+      function updateProgress() {
+        let progress = 0;
+        if (photoTaken) progress += 50;
+        if (voiceRecorded) progress += 50;
+
+        setupProgress.style.width = `${progress}%`;
+        setupProgress.textContent = `${progress}%`;
+        setupProgress.setAttribute("aria-valuenow", progress);
+
+        continueBtn.disabled = !(photoTaken && voiceRecorded);
+      }
+
+      // Submit baseline data and continue to exam
+      continueBtn.addEventListener("click", async () => {
+        try {
+          continueBtn.disabled = true;
+          continueBtn.innerHTML =
+            '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+
+          // Create form data
+          const formData = new FormData();
+          formData.append("photo_data", photoPreview.src);
+          formData.append("audio_data", audioBlob, "voice_sample.webm");
+
+          // Submit to server
+          const response = await fetch("/capture-baseline", {
+            method: "POST",
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            window.location.href = "/start-test";
+          } else {
+            alert(`Error: ${result.error}`);
+            continueBtn.disabled = false;
+            continueBtn.textContent = "Continue to Exam";
+          }
+        } catch (error) {
+          console.error("Error submitting baseline data:", error);
+          alert(
+            "An error occurred while submitting your data. Please try again."
+          );
+          continueBtn.disabled = false;
+          continueBtn.textContent = "Continue to Exam";
+        }
+      });
+
+      // Initialize webcam when page loads
+      window.addEventListener("DOMContentLoaded", initWebcam);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
